@@ -9,6 +9,9 @@ import CreateCard from "./Pages/CreateCard/CreateCard";
 import CardDetails from "./Components/CardDetails";
 import Favourites from "./Pages/Favourites/Favourites";
 
+import SignUp from "./Pages/SignUp/signUp";
+import About from "./Pages/About/about";
+
 function App() {
   //const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   return (
@@ -22,6 +25,10 @@ function App() {
           element={<SignIn setIsloggedIN={setIsLoggedIn} />}
         /> */}
         <Route path="/signin" element={<SignIn />} />
+
+        <Route path="/signUp" element={<SignUp />} />
+
+        <Route path="/about" element={<About />} />
 
         <Route path="/card/:id" element={<CardDetails />} />
 

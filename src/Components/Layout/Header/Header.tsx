@@ -47,6 +47,15 @@ const Header = () => {
         </Navbar.Link>
 
         <Navbar.Link
+          as={Link}
+          to={"/signup"}
+          href="/signup"
+          className="text-white"
+        >
+          Sign up
+        </Navbar.Link>
+
+        <Navbar.Link
           className="cursor-pointer text-white"
           onClick={() => dispatch(userActions.logout())}
         >
@@ -63,7 +72,16 @@ const Header = () => {
             Profile
           </Navbar.Link>
         )}
-
+    {user !== null && (
+          <Navbar.Link
+            as={Link}
+            to={"/favourites"}
+            href="/favourites"
+            className="text-white"
+          >
+            Favourites
+          </Navbar.Link>
+        )}
         {user && user.isBusiness && (
           <Navbar.Link
             as={Link}
@@ -73,7 +91,44 @@ const Header = () => {
           >
             Create Card
           </Navbar.Link>
+          
+
+
+         
+
+
         )}
+
+{user && user.isBusiness && (
+          <Navbar.Link
+            as={Link}
+            to={"favourites"}
+            href="favourites"
+            className="text-white"
+          >
+            Favourites
+          </Navbar.Link>
+          
+
+
+         
+
+
+        )}
+
+{user !== null && (
+          <Navbar.Link
+            as={Link}
+            to={"/about"}
+            href="/about"
+            className="text-white"
+          >
+            About
+          </Navbar.Link>
+        )}
+
+
+
       </Navbar.Collapse>
     </Navbar>
   );

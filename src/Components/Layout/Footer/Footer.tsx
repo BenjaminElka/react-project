@@ -2,7 +2,7 @@ import { Footer as FbFooter } from "flowbite-react";
 
 const Footer = () => {
   return (
-    <FbFooter container className="absolute bottom-0 bg-slate-800">
+    <FbFooter container className="absolute  bg-slate-800">
       <div className="flex w-full justify-center">
         <FbFooter.Copyright
           href="#"

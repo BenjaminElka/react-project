@@ -6,3 +6,15 @@ body {
   overflow-x: hidden;
   overflow-y: scroll;
 }
+.card-container{
+  width:200px;
+  height:400px;
+
+}
+.cards-container{
+display:flex;
+flex-wrap:wrap;
+justify-content: center;
+gap: 33px;
+
+}

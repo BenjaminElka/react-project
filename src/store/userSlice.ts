@@ -1,46 +1,56 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// type of user
-type Tuser = {
-    _id: string;
-    name: {
-        first: string;
-        middle?: string;
-        last: string;
-    };
-    isBusiness: boolean;
-    isAdmin: boolean;
-    email: string;
-    phone: string;
-    address: {
-        city: string;
-        state: string;
-        country: string;
-        street: string;
-        zip?: string;
-    }
+/* ---------- Types ---------- */
+export type TImage = {
+  url: string;
+  alt?: string;
+};
+
+export type TAddress = {
+  city: string;
+  state: string;
+  country: string;
+  street: string;
+  houseNumber: number;
+  zip?: string;
+};
+
+export type Tuser = {
+  _id: string;
+  name: {
+    first: string;
+    middle?: string;
+    last: string;
+  };
+  email: string;
+  phone: string;
+  isBusiness: boolean;
+  isAdmin: boolean;
+  address: TAddress;
+  image: TImage;
+};
+
+/* ---------- Slice ---------- */
+interface UserSliceState {
+  user: Tuser | null;
 }
 
-// This is the initial state of the user slice
-const initialState = {
-    user: null as Tuser | null,
-}
+const initialState: UserSliceState = { user: null };
 
-// this is the user slice of the redux store
-// its created using the createSlice function from redux toolkit
 const userSlice = createSlice({
-    name: "user",
-    initialState,
-    reducers: { // Actions to update the state
-        login: (state, data) => {
-            state.user = data.payload;
-        },
-        logout: (state) => {
-            state.user = null;
-        },
+  name: "user",
+  initialState,
+  reducers: {
+    /** שמירת אובייקט המשתמש המלא ב-Redux */
+    login: (state, action: PayloadAction<Tuser>) => {
+      state.user = action.payload;
     },
+    /** ניקוי המשתמש (יציאה) */
+    logout: (state) => {
+      state.user = null;
+    },
+  },
 });
 
-//export type TUserSliceState = typeof initialState; if we want to go type safety
-export const userActions = userSlice.actions; // this will give us the actions of the slice
-export default userSlice.reducer; // this will give us the whoale slice reducer
+export const userActions = userSlice.actions;
+export default userSlice.reducer;

@@ -1,15 +1,29 @@
 import { joiResolver } from "@hookform/resolvers/joi";
-import { Button, FloatingLabel } from "flowbite-react";
+import { Button, Label, TextInput } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { SignUpJoiSchema } from "../../validations/SignUpSchema.joi"
-type FormData = {
-  fullName: string;
+import { SignUpJoiSchema } from "../../validations/SignUpSchema.joi";
+import MuiButton from '@mui/material/Button';
+import MuiButtonGroup from '@mui/material/ButtonGroup';
+
+
+// types
+export type FormData = {
+  firstName: string;
+  middleName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
+  phone: string;
+  country: string;
+  state: string;
+  city: string;
+  street: string;
+  houseNumber: string;
+  zip: string;
 };
 
 export default function Register() {
@@ -21,10 +35,19 @@ export default function Register() {
     formState: { errors, isValid },
   } = useForm<FormData>({
     defaultValues: {
-      fullName: "",
+      firstName: "",
+      middleName: "",
+      lastName: "",
       email: "",
       password: "",
       confirmPassword: "",
+      phone: "",
+      country: "",
+      state: "",
+      city: "",
+      street: "",
+      houseNumber: "",
+      zip: "",
     },
     mode: "onChange",
     resolver: joiResolver(SignUpJoiSchema),
@@ -32,29 +55,56 @@ export default function Register() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      // מוודא ש־password ו־confirmPassword זהים
       if (data.password !== data.confirmPassword) {
         toast.error("סיסמה ואימות סיסמה אינם תואמים");
         return;
       }
 
-      // קריאה ל־API להרשמה
       await axios.post(
-        "https://monkfish-app-z9uza.ondigitalocean.app/bcard2/users/register",
+        "https://monkfish-app-z9uza.ondigitalocean.app/bcard2/users",
         {
-          name: data.fullName,
           email: data.email,
           password: data.password,
-        },
+          phone: data.phone,
+          name: {
+            first: data.firstName,
+            middle: data.middleName,
+            last: data.lastName,
+          },
+          image: { url: "" },
+          address: {
+            country: data.country,
+            state: data.state,
+            city: data.city,
+            street: data.street,
+            houseNumber: data.houseNumber,
+            zip: data.zip,
+          },
+          isBusiness: false,
+          isAdmin: false,
+        }
       );
 
       toast.success("הרשמה הושלמה בהצלחה");
-      navigate("/login"); // מפנה לדף ההתחברות
+      navigate("/login");
     } catch (err) {
       console.error(err);
       toast.error("הרשמה נכשלה, נסה שוב");
     }
   };
+
+  const renderInput = (id: keyof FormData, label: string, type = "text") => (
+    <div>
+      <Label htmlFor={id} value={label} />
+      <TextInput
+        id={id}
+        type={type}
+        {...register(id)}
+        color={errors[id] ? "failure" : "gray"}
+        helperText={<span className="text-red-500">{errors[id]?.message}</span>}
+      />
+    </div>
+  );
 
   return (
     <form
@@ -63,47 +113,28 @@ export default function Register() {
     >
       <h1 className="text-2xl font-bold text-gray-800">הרשמה</h1>
 
-      <FloatingLabel
-        type="text"
-        variant="outlined"
-        label="שם מלא"
-        {...register("fullName")}
-        color={errors.fullName ? "error" : "success"}
-      />
-      <span className="text-sm text-red-500">{errors.fullName?.message}</span>
+      {renderInput("firstName", "שם פרטי")}
+      {renderInput("middleName", "שם אמצעי")}
+      {renderInput("lastName", "שם משפחה")}
+      {renderInput("email", "Email", "email")}
+      {renderInput("password", "Password", "password")}
+      {renderInput("confirmPassword", "Confirm Password", "password")}
+      {renderInput("phone", "טלפון")}
+      {renderInput("country", "מדינה")}
+      {renderInput("state", "מחוז")}
+      {renderInput("city", "עיר")}
+      {renderInput("street", "רחוב")}
+      {renderInput("houseNumber", "מספר בית")}
+      {renderInput("zip", "מיקוד")}
 
-      <FloatingLabel
-        type="email"
-        variant="outlined"
-        label="Email"
-        {...register("email")}
-        color={errors.email ? "error" : "success"}
-      />
-      <span className="text-sm text-red-500">{errors.email?.message}</span>
+      <Button type="submit" disabled={!isValid}>Register</Button>
 
-      <FloatingLabel
-        type="password"
-        variant="outlined"
-        label="Password"
-        {...register("password")}
-        color={errors.password ? "error" : "success"}
-      />
-      <span className="text-sm text-red-500">{errors.password?.message}</span>
+      <MuiButtonGroup variant="contained" aria-label="Basic button group">
+      <MuiButton>One</MuiButton>
+      <MuiButton>Two</MuiButton>
+      <MuiButton>Three</MuiButton>
+    </MuiButtonGroup>
 
-      <FloatingLabel
-        type="password"
-        variant="outlined"
-        label="Confirm Password"
-        {...register("confirmPassword")}
-        color={errors.confirmPassword ? "error" : "success"}
-      />
-      <span className="text-sm text-red-500">
-        {errors.confirmPassword?.message}
-      </span>
-
-      <Button type="submit" disabled={!isValid}>
-        Register
-      </Button>
     </form>
   );
 }
