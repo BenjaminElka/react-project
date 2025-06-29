@@ -1,15 +1,18 @@
+
 import { joiResolver } from "@hookform/resolvers/joi";
-import { Button, Label, TextInput } from "flowbite-react";
+import {
+  Button,
+  Label,
+  TextInput,
+  Checkbox,          
+} from "flowbite-react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { SignUpJoiSchema } from "../../validations/SignUpSchema.joi";
-import MuiButton from '@mui/material/Button';
-import MuiButtonGroup from '@mui/material/ButtonGroup';
 
-
-// types
+/* ---------- types ---------- */
 export type FormData = {
   firstName: string;
   middleName: string;
@@ -24,11 +27,13 @@ export type FormData = {
   street: string;
   houseNumber: string;
   zip: string;
+  isBusiness: boolean;          // ⬅️  חדש
 };
 
 export default function Register() {
   const navigate = useNavigate();
 
+  /* ---------- react-hook-form ---------- */
   const {
     register,
     handleSubmit,
@@ -48,11 +53,13 @@ export default function Register() {
       street: "",
       houseNumber: "",
       zip: "",
+      isBusiness: false,        // ⬅️  ברירת מחדל
     },
     mode: "onChange",
-    resolver: joiResolver(SignUpJoiSchema),
+    resolver: joiResolver(SignUpJoiSchema), // ‼️ ראה הערה למטה
   });
 
+  /* ---------- submit ---------- */
   const onSubmit = async (data: FormData) => {
     try {
       if (data.password !== data.confirmPassword) {
@@ -80,20 +87,25 @@ export default function Register() {
             houseNumber: data.houseNumber,
             zip: data.zip,
           },
-          isBusiness: false,
+          isBusiness: data.isBusiness,     // ⬅️  הערך מהטופס
           isAdmin: false,
-        }
+        },
       );
 
       toast.success("הרשמה הושלמה בהצלחה");
-      navigate("/login");
+      navigate("/signin");
     } catch (err) {
       console.error(err);
       toast.error("הרשמה נכשלה, נסה שוב");
     }
   };
 
-  const renderInput = (id: keyof FormData, label: string, type = "text") => (
+  /* ---------- helper ---------- */
+  const renderInput = (
+    id: keyof FormData,
+    label: string,
+    type: React.HTMLInputTypeAttribute = "text",
+  ) => (
     <div>
       <Label htmlFor={id} value={label} />
       <TextInput
@@ -101,14 +113,17 @@ export default function Register() {
         type={type}
         {...register(id)}
         color={errors[id] ? "failure" : "gray"}
-        helperText={<span className="text-red-500">{errors[id]?.message}</span>}
+        helperText={
+          <span className="text-red-500">{errors[id]?.message as string}</span>
+        }
       />
     </div>
   );
 
+  /* ---------- JSX ---------- */
   return (
     <form
-      className="m-auto mt-20 flex w-2/5 flex-col gap-4 rounded-lg p-4 shadow-lg"
+      className="m-auto mt-20 flex w-full max-w-xl flex-col gap-4 rounded-lg p-4 shadow-lg"
       onSubmit={handleSubmit(onSubmit)}
     >
       <h1 className="text-2xl font-bold text-gray-800">הרשמה</h1>
@@ -127,14 +142,15 @@ export default function Register() {
       {renderInput("houseNumber", "מספר בית")}
       {renderInput("zip", "מיקוד")}
 
-      <Button type="submit" disabled={!isValid}>Register</Button>
+      {/* Business checkbox */}
+      <div className="flex items-center gap-2">
+        <Checkbox id="isBusiness" {...register("isBusiness")} />
+        <Label htmlFor="isBusiness" value="חשבוני הוא עסקי (Business Account)" />
+      </div>
 
-      <MuiButtonGroup variant="contained" aria-label="Basic button group">
-      <MuiButton>One</MuiButton>
-      <MuiButton>Two</MuiButton>
-      <MuiButton>Three</MuiButton>
-    </MuiButtonGroup>
-
+      <Button type="submit" disabled={!isValid}>
+        Register
+      </Button>
     </form>
   );
 }

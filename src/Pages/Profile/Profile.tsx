@@ -1,9 +1,11 @@
+/*  src/Pages/Profile/Profile.tsx  */
+
 import axios from "axios";
 import {
   Button,
   Card,
-  FloatingLabel,
-  Flowbite,          
+  TextInput,   // ⬅️  NEW: replaces deprecated <FloatingLabel>
+  Flowbite,
 } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +16,7 @@ import Joi from "joi";
 import { TRootState } from "../../store/store";
 import { userActions } from "../../store/userSlice";
 
+/* ---------- types & validation ---------- */
 type FormData = {
   firstName: string;
   middleName: string;
@@ -29,6 +32,7 @@ type FormData = {
   imageUrl: string;
   imageAlt: string;
 };
+
 const schema = Joi.object<FormData>({
   firstName: Joi.string().min(2).max(20).required(),
   middleName: Joi.string().allow("").max(20),
@@ -45,18 +49,18 @@ const schema = Joi.object<FormData>({
   imageAlt: Joi.string().allow("").max(50),
 });
 
+/* ---------- component ---------- */
 const Profile = () => {
   const dispatch = useDispatch();
   const user = useSelector((s: TRootState) => s.userSlice.user);
   const [editMode, setEditMode] = useState(false);
 
-  /* --- log entire user object on every change --- */
+  /*–– log entire user object whenever it changes ––*/
   useEffect(() => {
     console.log("🔎 FULL USER OBJECT →", user);
     console.log("🔎 JSON →\n", JSON.stringify(user, null, 2));
   }, [user]);
 
-  /* --- react-hook-form --- */
   const {
     register,
     handleSubmit,
@@ -84,6 +88,7 @@ const Profile = () => {
       : undefined,
   });
 
+  /* keep form in sync with user + edit mode */
   useEffect(() => {
     if (user)
       reset({
@@ -141,14 +146,17 @@ const Profile = () => {
     }
   };
 
-  
+  /* helper to pull Joi messages */
   const err = (k: keyof FormData) => errors[k]?.message;
 
   if (!user) return null;
+
   return (
     <Flowbite>
       <div className="flex min-h-screen flex-col items-center gap-6 p-4">
         <h1 className="text-3xl font-bold">פרופיל משתמש</h1>
+
+        {/* ---------- VIEW MODE ---------- */}
         {!editMode ? (
           <Card className="w-full max-w-2xl">
             <div className="flex flex-col items-center gap-4">
@@ -172,58 +180,114 @@ const Profile = () => {
             </div>
           </Card>
         ) : (
+          /* ---------- EDIT MODE ---------- */
           <Card className="w-full max-w-2xl">
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+            <form
+              className="flex flex-col gap-4"
+              onSubmit={handleSubmit(onSubmit)}
+            >
               {/* personal */}
-              <FloatingLabel
-                label="שם פרטי"
+              <TextInput
+                id="firstName"
+                placeholder=" "
+                variant="floating"
                 {...register("firstName")}
                 color={err("firstName") ? "failure" : undefined}
+                helperText={err("firstName")}
               />
-              <span className="text-xs text-red-500">{err("firstName")}</span>
 
-              <FloatingLabel label="שם אמצעי" {...register("middleName")} />
+              <TextInput
+                id="middleName"
+                placeholder=" "
+                variant="floating"
+                {...register("middleName")}
+              />
 
-              <FloatingLabel
-                label="שם משפחה"
+              <TextInput
+                id="lastName"
+                placeholder=" "
+                variant="floating"
                 {...register("lastName")}
                 color={err("lastName") ? "failure" : undefined}
+                helperText={err("lastName")}
               />
-              <span className="text-xs text-red-500">{err("lastName")}</span>
 
-              <FloatingLabel
-                label="אימייל"
+              <TextInput
+                id="email"
+                placeholder=" "
+                variant="floating"
+                type="email"
                 {...register("email")}
                 color={err("email") ? "failure" : undefined}
+                helperText={err("email")}
               />
-              <span className="text-xs text-red-500">{err("email")}</span>
 
-              <FloatingLabel
-                label="טלפון"
+              <TextInput
+                id="phone"
+                placeholder=" "
+                variant="floating"
                 {...register("phone")}
                 color={err("phone") ? "failure" : undefined}
+                helperText={err("phone")}
               />
-              <span className="text-xs text-red-500">{err("phone")}</span>
-              <FloatingLabel label="מדינה" {...register("country")} />
-              <FloatingLabel label="מחוז" {...register("state")} />
-              <FloatingLabel label="עיר" {...register("city")} />
-              <FloatingLabel label="רחוב" {...register("street")} />
-              <FloatingLabel
-                label="מס' בית"
+
+              {/* address */}
+              <TextInput
+                id="country"
+                placeholder=" "
+                variant="floating"
+                {...register("country")}
+              />
+              <TextInput
+                id="state"
+                placeholder=" "
+                variant="floating"
+                {...register("state")}
+              />
+              <TextInput
+                id="city"
+                placeholder=" "
+                variant="floating"
+                {...register("city")}
+              />
+              <TextInput
+                id="street"
+                placeholder=" "
+                variant="floating"
+                {...register("street")}
+              />
+              <TextInput
+                id="houseNumber"
+                placeholder=" "
+                variant="floating"
                 type="number"
                 {...register("houseNumber")}
               />
-              <FloatingLabel label="מיקוד" type="number" {...register("zip")} />
+              <TextInput
+                id="zip"
+                placeholder=" "
+                variant="floating"
+                type="number"
+                {...register("zip")}
+              />
 
               {/* image */}
-              <FloatingLabel label="קישור לתמונה" {...register("imageUrl")} />
-              <FloatingLabel label="Alt לתמונה" {...register("imageAlt")} />
+              <TextInput
+                id="imageUrl"
+                placeholder=" "
+                variant="floating"
+                {...register("imageUrl")}
+              />
+              <TextInput
+                id="imageAlt"
+                placeholder=" "
+                variant="floating"
+                {...register("imageAlt")}
+              />
 
               {/* buttons */}
               <div className="mt-4 flex justify-center gap-4">
-                <Button type="submit" disabled={!isValid}>
-                  שמור
-                </Button>
+                <Button type="submit" disabled={!isValid}>   שמור        </Button>
                 <Button
                   color="light"
                   type="button"

@@ -36,4 +36,7 @@ export const SignUpJoiSchema = Joi.object({
   street: Joi.string().required().messages({ "string.empty": "יש להזין רחוב" }),
   houseNumber: Joi.string().required().messages({ "string.empty": "יש להזין מספר בית" }),
   zip: Joi.string().required().messages({ "string.empty": "יש להזין מיקוד" }),
+  isBusiness: Joi.boolean().required()
+
 });
+

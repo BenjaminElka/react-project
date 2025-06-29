@@ -9,6 +9,7 @@ import CreateCard from "./Pages/CreateCard/CreateCard";
 import CardDetails from "./Components/CardDetails";
 import Favourites from "./Pages/Favourites/Favourites";
 
+import { DarkThemeToggle,  } from "flowbite-react";
 import SignUp from "./Pages/SignUp/signUp";
 import About from "./Pages/About/about";
 
@@ -18,6 +19,7 @@ function App() {
     <>
       {/* <Header isLoggedIn={isLoggedIn} setIsloggedIN={setIsLoggedIn} /> */}
       <Header />
+      <DarkThemeToggle />
       <Routes>
         <Route path="/*" element={<Home />} />
         {/* <Route
